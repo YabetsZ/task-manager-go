@@ -4,16 +4,16 @@
 The objective of this task is to create a simple Task Management REST API using Go programming language and Gin Framework. This API will support basic CRUD operations for managing tasks.
 
 ## Requirements
-Implement a REST API with the following endpoints:
+1. Implement a REST API with the following endpoints:
 - `GET /tasks`: Get a list of all tasks.
 - `GET /tasks/:id`: Get the details of a specific task.
 - `PUT /tasks/:id`: Update a specific task. This endpoint should accept a JSON body with the new details of the task.
 - `DELETE /tasks/:id`: Delete a specific task.
 - `POST /tasks`: Create a new task. This endpoint should accept a JSON body with the task's title, description, due date, and status.
-- Use an in-memory database to store tasks. Database integration with persistent storage will be covered in later lessons, so for this task, focus on implementing data storage in memory.
-- Ensure proper error handling and response codes for different scenarios such as successful operations, invalid requests, and resources not found.
-- Provide clear and concise documentation for each endpoint using postman, including expected request payloads and response formats.
-- Utilize Postman to test each endpoint of the Task Management API.
+2. Use an in-memory database to store tasks. Database integration with persistent storage will be covered in later lessons, so for this task, focus on implementing data storage in memory.
+3. Ensure proper error handling and response codes for different scenarios such as successful operations, invalid requests, and resources not found.
+4. Provide clear and concise documentation for each endpoint using postman, including expected request payloads and response formats.
+5. Utilize Postman to test each endpoint of the Task Management API.
 
 ## Instructions
 1. Use Go programming language and Gin Framework to develop the API.

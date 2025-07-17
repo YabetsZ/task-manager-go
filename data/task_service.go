@@ -38,7 +38,7 @@ func (ts *TaskService) GetTasks() []*models.Task {
 	return tasks
 }
 
-func (ts *TaskService) GetTaskById(id string) (*models.Task, error) {
+func (ts *TaskService) GetTaskByID(id string) (*models.Task, error) {
 	task, exist := ts.tasks[id]
 	if !exist {
 		return nil, fmt.Errorf("couldn't find a taks with id %s", id)
@@ -67,7 +67,7 @@ func (ts *TaskService) UpdateTask(id string, updatedTask models.Task) (*models.T
 }
 
 func (ts *TaskService) DeleteTask(id string) error {
-	if _, err := ts.GetTaskById(id); err != nil {
+	if _, err := ts.GetTaskByID(id); err != nil {
 		return err
 	}
 	delete(ts.tasks, id)

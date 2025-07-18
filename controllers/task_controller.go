@@ -35,14 +35,20 @@ func (tc *TaskController) CreateTask(c *gin.Context) {
 		return
 	}
 
-	createdTask := tc.taskService.CreateTask(newTask)
+	createdTask, err := tc.taskService.CreateTask(newTask)
+	if err != nil {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	}
 	c.JSON(http.StatusCreated, createdTask)
 }
 
 // GetTasks handles GET /tasks requests.
 func (tc *TaskController) GetTasks(c *gin.Context) {
-	tasks := tc.taskService.GetTasks()
-	c.JSON(http.StatusOK, tasks)
+	tasks, err := tc.taskService.GetTasks()
+	if err != nil {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	}
+	c.IndentedJSON(http.StatusOK, tasks)
 }
 
 // GetTaskByID handles GET /tasks/:id requests.

@@ -46,8 +46,16 @@ Follow these instructions to get the project running on your local machine.
     ```sh
     go mod tidy
     ```
+3. **Database Setup:**
+   This API uses MongoDB for persistent data storage. You must have a running MongoDB instance to connect to.
 
-3.  **Run the application:**
+   -  **Set up MongoDB:** You can use a local Docker container or a free cloud instance from [MongoDB Atlas](https://www.mongodb.com/cloud/atlas).
+   -  **Configure Connection String:** Open the `main.go` file and update the `MONGO_URI` constant with your MongoDB connection string.
+
+    ```go
+    const MONGO_URI = "your-mongodb-connection-string-goes-here"
+    ```
+4.  **Run the application:**
     This command will compile and run the `main.go` file, starting the web server on `http://localhost:5000`.
     ```sh
     go run main.go

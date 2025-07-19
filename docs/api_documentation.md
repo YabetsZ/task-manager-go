@@ -44,6 +44,8 @@ This document provides details for the Task Management REST API.
       }
   ]
   ```
+- **Error Response:**
+  - **Code:** `400 Bad Request` if the payload is invalid.
 
 ### 3. Get a Specific Task
 

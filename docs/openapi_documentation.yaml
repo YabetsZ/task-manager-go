@@ -19,6 +19,9 @@ paths:
                                 type: array
                                 items:
                                     $ref: "#/components/schemas/Task"
+                "400":
+                    description: A bad request( this shouldn't be the only error response)
+
         post:
             summary: Create a new task
             description: Adds a new task to the system.

@@ -2,16 +2,17 @@
 
 ![Go Version](https://img.shields.io/badge/go-1.24+-blue.svg)
 
-This project is an implementation of a task from the A2SV backend learning with Golang (as specified in [task](./Task.md)). It is a simple and robust RESTful API for managing tasks, built with Go and the high-performance Gin web framework, demonstrating a clean, layered architecture for building maintainable and scalable web services.
+This project is an implementation of a task from the A2SV backend learning with Golang (as specified in **Task-*-instructions.md**). It is a simple and robust RESTful API for managing tasks, built with Go and the high-performance Gin web framework, demonstrating a clean, layered architecture for building maintainable and scalable web services.
 
-The API supports full CRUD (Create, Read, Update, Delete) functionality for tasks and uses an in-memory data store, requiring no external database setup.
+The API supports full CRUD (Create, Read, Update, Delete) functionality for tasks and uses mogodb for persistence storage.
 
 ## Features
 
 -   **Create, Read, Update, Delete (CRUD)** operations for tasks.
 -   RESTful endpoints for easy integration with any client.
--   In-memory data storage (no external database required).
--   Structured logging and clear error responses.
+-   Authorization and Authentication
+-   Persistence strorage with mongoDB.
+-   Clear error responses.
 -   Dependency injection for decoupled and testable components.
 
 ## Project Structure
@@ -24,6 +25,8 @@ The project follows a layered architecture to separate concerns, making the code
 -   `/controllers`: The presentation layer, handling HTTP requests and responses.
 -   `/router`: Defines all API routes and connects them to controller handlers.
 -   `/docs`: Contains project documentation.
+-   `/errs`: Defines custom error handler struct.
+-   `/middleware`: Sets Authorization middleware for the application.
 
 ## Getting Started
 

@@ -15,7 +15,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-const jwtSecret = "task_manager_secret"
+const JWTSecret = "task_manager_secret"
 
 type CustomClaims struct {
 	UserID   string `json:"user_id"`
@@ -96,7 +96,7 @@ func (us *UserService) generateJWT(user *models.User) (string, *errs.AppError) {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodES256, claims)
 
-	signedToken, err := token.SignedString(jwtSecret)
+	signedToken, err := token.SignedString(JWTSecret)
 	if err != nil {
 		return "", errs.New(http.StatusInternalServerError, "unexpected error", err)
 	}

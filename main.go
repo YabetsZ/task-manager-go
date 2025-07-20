@@ -13,9 +13,8 @@ import (
 )
 
 const (
-	MONGO_URI       = "mongodb://root:password@localhost:27017"
-	DATABASE_NAME   = "task_db"
-	COLLECTION_NAME = "tasks"
+	MONGO_URI     = "mongodb://root:password@localhost:27017"
+	DATABASE_NAME = "task_db"
 )
 
 func main() {
@@ -23,9 +22,11 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to connect to MongoDB: %v", err)
 	}
-	collection := client.Database(DATABASE_NAME).Collection(COLLECTION_NAME)
-	newTaskService := data.NewTaskService(collection)
-	newUserService := data.NewUserService(collection)
+	tasksCollection := client.Database(DATABASE_NAME).Collection("tasks")
+	usersCollection := client.Database(DATABASE_NAME).Collection("users")
+
+	newTaskService := data.NewTaskService(tasksCollection)
+	newUserService := data.NewUserService(usersCollection)
 
 	newAppController := controllers.NewAppController(newTaskService, newUserService)
 	r := router.SetupRouter(newAppController, newUserService)

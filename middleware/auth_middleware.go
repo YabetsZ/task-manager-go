@@ -4,7 +4,7 @@ import (
 	"errors"
 	"net/http"
 	"task-manager/data"
-	"task-manager/errs"
+	"task-manager/models"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
@@ -39,15 +39,21 @@ func AuthMiddleware(userService *data.UserService, requiredRole string) gin.Hand
 			return
 		}
 
-		user, err := userService.GetUserByID(claims.UserID)
+		user, appErr := userService.GetUserByID(claims.UserID)
 
-		if err != nil {
-			appErr := &errs.AppError{}
-			if errors.As(err, appErr) {
-				c.AbortWithStatusJSON(appErr.Code, gin.H{"error": appErr.Msg})
-				return
-			}
+		if appErr != nil {
+			c.AbortWithStatusJSON(appErr.Code, gin.H{"error": appErr.Msg})
+			return
 		}
 
+		// Only admins can access admin routes
+		if requiredRole == models.RoleAdmin && user.Role != models.RoleAdmin {
+			c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "Admin access required"})
+			return
+		}
+
+		// Set user in context for downstream handlers
+		c.Set("user", user)
+		c.Next()
 	}
 }

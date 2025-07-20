@@ -25,9 +25,10 @@ func main() {
 	}
 	collection := client.Database(DATABASE_NAME).Collection(COLLECTION_NAME)
 	newTaskService := data.NewTaskService(collection)
+	newUserService := data.NewUserService(collection)
 
-	newTaskController := controllers.NewTaskController(newTaskService)
-	r := router.SetupRouter(newTaskController)
+	newAppController := controllers.NewAppController(newTaskService, newUserService)
+	r := router.SetupRouter(newAppController, newUserService)
 
 	log.Println("Starting server on port 5000...")
 	if err := r.Run(":5000"); err != nil {

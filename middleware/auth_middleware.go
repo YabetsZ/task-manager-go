@@ -45,7 +45,11 @@ func AuthMiddleware(userService *data.UserService, requiredRole string) gin.Hand
 			c.AbortWithStatusJSON(appErr.Code, gin.H{"error": appErr.Msg})
 			return
 		}
-
+		// Guests are not allowed to pass
+		if requiredRole == models.RoleUser && user.Role != models.RoleUser && user.Role != models.RoleAdmin {
+			c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "Insufficient permissions"})
+			return
+		}
 		// Only admins can access admin routes
 		if requiredRole == models.RoleAdmin && user.Role != models.RoleAdmin {
 			c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "Admin access required"})

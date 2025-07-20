@@ -69,14 +69,14 @@ func (us *UserService) Login(username, password string) (string, *errs.AppError)
 	err := us.collection.FindOne(ctx, bson.M{"username": username}).Decode(&user)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
-			return "", errs.New(http.StatusNotFound, "invalid credentials", err)
+			return "", errs.New(http.StatusUnauthorized, "invalid credentials", err)
 		}
 		return "", errs.New(http.StatusInternalServerError, "Unexpected Error", err)
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password))
 	if err != nil {
-		return "", errs.New(http.StatusInternalServerError, "invalid credentials", err)
+		return "", errs.New(http.StatusUnauthorized, "invalid credentials", err)
 	}
 
 	return us.generateJWT(&user)
@@ -109,7 +109,7 @@ func (us *UserService) GetUserByID(id string) (*models.User, *errs.AppError) {
 
 	objId, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
-		return nil, errs.New(http.StatusInternalServerError, "invalid user ID format", err)
+		return nil, errs.New(http.StatusBadRequest, "invalid user ID format", err)
 	}
 
 	var user models.User
@@ -131,7 +131,7 @@ func (us *UserService) Promote(id string) *errs.AppError {
 
 	objId, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
-		return errs.New(http.StatusInternalServerError, "invalid user ID format", err)
+		return errs.New(http.StatusBadRequest, "invalid user ID format", err)
 	}
 
 	update := bson.M{

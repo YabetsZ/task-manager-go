@@ -1,5 +1,9 @@
 package errs
 
+import (
+	"errors"
+)
+
 type AppError struct {
 	Code int
 	Msg  string
@@ -18,4 +22,6 @@ func New(code int, msg string, err error) *AppError {
 	return &AppError{code, msg, err}
 }
 
-var ()
+var (
+	ErrUserNotFound = errors.New("user is not found")
+)

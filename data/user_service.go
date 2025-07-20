@@ -102,3 +102,50 @@ func (us *UserService) generateJWT(user *models.User) (string, *errs.AppError) {
 	}
 	return signedToken, nil
 }
+
+func (us *UserService) GetUserByID(id string) (*models.User, *errs.AppError) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	objId, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return nil, errs.New(http.StatusInternalServerError, "invalid user ID format", err)
+	}
+
+	var user models.User
+
+	err = us.collection.FindOne(ctx, bson.M{"_id": objId}).Decode(&user)
+	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return nil, errs.New(http.StatusNotFound, "invalid user id", err)
+		}
+		return nil, errs.New(http.StatusInternalServerError, "unexpected error", err)
+	}
+
+	return &user, nil
+}
+
+func (us *UserService) Promote(id string) *errs.AppError {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	objId, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return errs.New(http.StatusInternalServerError, "invalid user ID format", err)
+	}
+
+	update := bson.M{
+		"$set": bson.M{
+			"status": models.RoleAdmin,
+		},
+	}
+	result, err := us.collection.UpdateOne(ctx, bson.M{"_id": objId}, update)
+	if err != nil {
+		return errs.New(http.StatusInternalServerError, "unexpected error", err)
+	}
+	if result.MatchedCount == 0 {
+		return errs.New(http.StatusNotFound, "user with the given ID isn't found.", errs.ErrUserNotFound)
+	}
+
+	return nil
+}

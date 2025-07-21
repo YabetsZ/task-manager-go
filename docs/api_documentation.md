@@ -24,7 +24,7 @@ This document provides details for the Task Management REST API.
 -   **Success Response:**
     -   **Code:** `201 Created`
 -   **Error Responses:**
-    -   **Code:** `400 Bad Request` if the payload is invalid.
+    -   **Code:** `400 Bad Request` if the payload is invalid or username already exists
     -   **Code:** `500 Internal Server Error` for unexpected errors.
 
 ### 2. Login

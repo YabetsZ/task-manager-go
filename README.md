@@ -93,3 +93,9 @@ curl -X POST http://localhost:8080/tasks \
 ```
 
 Refer to the [API Documentation](./docs/api_documentation.md) for more examples and details on how to use each endpoint.
+
+NOTES
+- go to mongosh and set indexing of username
+```
+db.users.createIndex({ "username": 1 }, { "unique": true })
+```

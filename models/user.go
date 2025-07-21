@@ -8,8 +8,9 @@ const (
 )
 
 type User struct {
-	ID           primitive.ObjectID `json:"id" bson:"_id,omitempty"`
+	ID           primitive.ObjectID `json:"-" bson:"_id,omitempty"`
 	Username     string             `json:"username" bson:"username"`
-	PasswordHash string             `json:"-" bson:"password_hash"`
-	Role         string             `json:"role" bson:"role"`
+	Password     string             `json:"password,omitempty"`      // From frontend
+	PasswordHash string             `bson:"password_hash,omitempty"` // Stored in DB
+	Role         string             `json:"-" bson:"role"`
 }

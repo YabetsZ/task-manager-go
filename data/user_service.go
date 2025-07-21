@@ -3,6 +3,7 @@ package data
 import (
 	"context"
 	"errors"
+	"log"
 	"net/http"
 	"task-manager/errs"
 	"task-manager/models"
@@ -37,14 +38,23 @@ func (us *UserService) RegisterUser(user *models.User) *errs.AppError {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.PasswordHash), bcrypt.DefaultCost)
+	// check if username already exists
+	count, err := us.collection.CountDocuments(ctx, bson.M{"username": user.Username})
+	if err != nil {
+		return errs.New(http.StatusInternalServerError, "Unexpected error", err)
+	}
+	if count > 0 {
+		return errs.New(http.StatusBadRequest, "username already exist", nil)
+	}
+
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return errs.New(http.StatusInternalServerError, "Unexpected error", err)
 	}
 	user.PasswordHash = string(hashedPassword)
 
 	// For the requirement: "If the database is empty, the first created user will be an admin."
-	count, err := us.collection.CountDocuments(ctx, bson.M{})
+	count, err = us.collection.CountDocuments(ctx, bson.M{})
 	if err != nil {
 		return errs.New(http.StatusInternalServerError, "Unexpected error", err)
 	}
@@ -57,7 +67,10 @@ func (us *UserService) RegisterUser(user *models.User) *errs.AppError {
 	// Generate a new ID
 	user.ID = primitive.NewObjectID()
 
-	us.collection.InsertOne(ctx, user)
+	_, err = us.collection.InsertOne(ctx, user)
+	if err != nil {
+		return errs.New(http.StatusInternalServerError, "Unexpected error", err)
+	}
 	return nil
 }
 
@@ -65,19 +78,26 @@ func (us *UserService) Login(username, password string) (string, *errs.AppError)
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
+	log.Printf("INFO: Login attempt for username: '%s'", username)
+
 	var user models.User
 	err := us.collection.FindOne(ctx, bson.M{"username": username}).Decode(&user)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
+			log.Printf("WARN: Login failed for username '%s': user not found", username)
 			return "", errs.New(http.StatusUnauthorized, "invalid credentials", err)
 		}
+		log.Printf("ERROR: Database error during login for username '%s': %v", username, err)
 		return "", errs.New(http.StatusInternalServerError, "Unexpected Error", err)
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password))
 	if err != nil {
+		log.Printf("WARN: Login failed for username '%s': invalid password", username)
 		return "", errs.New(http.StatusUnauthorized, "invalid credentials", err)
 	}
+
+	log.Printf("INFO: User '%s' (ID: %s, Role: %s) successfully authenticated", user.Username, user.ID.Hex(), user.Role)
 
 	return us.generateJWT(&user)
 }
@@ -94,10 +114,11 @@ func (us *UserService) generateJWT(user *models.User) (string, *errs.AppError) {
 		},
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodES256, claims)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
-	signedToken, err := token.SignedString(JWTSecret)
+	signedToken, err := token.SignedString([]byte(JWTSecret))
 	if err != nil {
+		log.Printf("ERROR: Failed to generate JWT for user '%s': %v", user.Username, err)
 		return "", errs.New(http.StatusInternalServerError, "unexpected error", err)
 	}
 	return signedToken, nil

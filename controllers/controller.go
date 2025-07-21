@@ -118,10 +118,7 @@ func (ac *AppController) Register(c *gin.Context) {
 
 // Login handles POST /login requests.
 func (ac *AppController) Login(c *gin.Context) {
-	var creds struct {
-		Username string `json:"username"`
-		Password string `json:"password"`
-	}
+	var creds models.User
 	if err := c.ShouldBindJSON(&creds); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload: " + err.Error()})
 		return

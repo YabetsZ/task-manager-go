@@ -3,9 +3,11 @@ package main
 import (
 	"context"
 	"log"
-	"task-manager/controllers"
-	"task-manager/data"
-	"task-manager/router"
+	"task-manager/delivery/controllers"
+	"task-manager/delivery/router"
+	"task-manager/infrastructure"
+	"task-manager/repositories"
+	"task-manager/usecases"
 	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
@@ -24,14 +26,18 @@ func main() {
 	}
 	tasksCollection := client.Database(DATABASE_NAME).Collection("tasks")
 	usersCollection := client.Database(DATABASE_NAME).Collection("users")
+	newMongoTaskRepository := repositories.NewMongoTaskRepository(tasksCollection)
+	newMongoUserRepository := repositories.NewMongoUserRepository(usersCollection)
+	newTaskUseCase := usecases.NewTaskUsecase(newMongoTaskRepository)
+	newUserUsecase := usecases.NewUserUsecase(
+		newMongoUserRepository,
+		infrastructure.NewBcryptService(),
+		infrastructure.NewJWTServiceV5(),
+	)
 
-	newTaskService := data.NewTaskService(tasksCollection)
-	newUserService := data.NewUserService(usersCollection)
+	newAppController := controllers.NewAppController(newTaskUseCase, newUserUsecase)
+	r := router.SetupRouter(newAppController, newUserUsecase)
 
-	newAppController := controllers.NewAppController(newTaskService, newUserService)
-	r := router.SetupRouter(newAppController, newUserService)
-
-	log.Println("Starting server on port 5000...")
 	if err := r.Run(":5000"); err != nil {
 		log.Fatalf("Failed to start server: %v", err)
 	}
@@ -52,6 +58,5 @@ func connectToDB() (*mongo.Client, error) {
 		return nil, err
 	}
 
-	log.Println("Successfully connected to MongoDB!")
 	return client, nil
 }

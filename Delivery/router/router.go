@@ -1,15 +1,15 @@
 package router
 
 import (
-	"task-manager/controllers"
-	"task-manager/data"
-	"task-manager/middleware"
-	"task-manager/models"
+	"task-manager/delivery/controllers"
+	"task-manager/domain"
+	"task-manager/infrastructure"
+	"task-manager/usecases"
 
 	"github.com/gin-gonic/gin"
 )
 
-func SetupRouter(ac *controllers.AppController, us *data.UserService) *gin.Engine {
+func SetupRouter(ac *controllers.AppController, uu usecases.UserUsecase) *gin.Engine {
 	r := gin.Default()
 
 	// public routes
@@ -21,7 +21,7 @@ func SetupRouter(ac *controllers.AppController, us *data.UserService) *gin.Engin
 	{
 		// Admin-only routes
 		adminRoutes := api.Group("")
-		adminRoutes.Use(middleware.AuthMiddleware(us, models.RoleAdmin))
+		adminRoutes.Use(infrastructure.AuthMiddleware(uu, domain.RoleAdmin))
 		{
 			adminRoutes.POST("/tasks", ac.CreateTask)
 			adminRoutes.PUT("/tasks/:id", ac.UpdateTask)
@@ -31,7 +31,7 @@ func SetupRouter(ac *controllers.AppController, us *data.UserService) *gin.Engin
 
 		// Routes for all authenticated users (Admin and User)
 		userRoutes := api.Group("")
-		userRoutes.Use(middleware.AuthMiddleware(us, models.RoleUser))
+		userRoutes.Use(infrastructure.AuthMiddleware(uu, domain.RoleUser))
 		{
 			userRoutes.GET("/tasks", ac.GetTasks)
 			userRoutes.GET("/tasks/:id", ac.GetTaskByID)

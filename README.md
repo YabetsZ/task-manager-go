@@ -4,7 +4,7 @@
 
 This project is an implementation of a task from the A2SV backend learning with Golang (as specified in **Task-*-instructions.md**). It is a simple and robust RESTful API for managing tasks, built with Go and the high-performance Gin web framework, demonstrating a clean, layered architecture for building maintainable and scalable web services.
 
-The API supports full CRUD (Create, Read, Update, Delete) functionality for tasks and uses mogodb for persistence storage.
+The API supports full CRUD (Create, Read, Update, Delete) functionality for tasks and uses MongoDB for persistence storage.
 
 ## Features
 
@@ -19,14 +19,13 @@ The API supports full CRUD (Create, Read, Update, Delete) functionality for task
 
 The project follows a layered architecture to separate concerns, making the codebase clean and easy to navigate:
 
--   `main.go`: The application's entry point, responsible for wiring all components together.
--   `/models`: Defines the core data structures (e.g., `Task`).
--   `/data`: The service layer, containing all business logic and data manipulation.
--   `/controllers`: The presentation layer, handling HTTP requests and responses.
--   `/router`: Defines all API routes and connects them to controller handlers.
+-   `/delivery`: The presentation layer, handling HTTP requests and responses.
+-   `/domain`: Defines the core data structures (i.e., `Task`, `User`).
+-   `/infrastructure`: Responsible for services like hashing passwords and creating JWTs.
+-   `/repositories`: The layer that is database specific to apply direct operations on the DB.
+-   `/usecases`: The service layer, containing all business logic and data manipulation.
 -   `/docs`: Contains project documentation.
--   `/errs`: Defines custom error handler struct.
--   `/middleware`: Sets Authorization middleware for the application.
+-   `/errs`: Defines custom error sentinels.
 
 ## Getting Started
 

@@ -4,7 +4,6 @@ This document provides details for the Task Management REST API.
 
 **Base URL:** `http://localhost:5000`
 
----
 
 ## Authentication Endpoints
 
@@ -53,6 +52,7 @@ This document provides details for the Task Management REST API.
 -   **Error Responses:**
     -   **Code:** `400 Bad Request` if the payload is invalid.
     -   **Code:** `401 Unauthorized` if the credentials are invalid.
+    -   **Code:** `404 Not Found` if the user does not exist.
     -   **Code:** `500 Internal Server Error` for unexpected errors.
 
 ### 3. Promote a User
@@ -65,7 +65,8 @@ This document provides details for the Task Management REST API.
     -   **Code:** `200 OK`
 -   **Error Responses:**
     -   **Code:** `400 Bad Request` if the user ID format is invalid.
-    -   **Code:** `401 Unauthorized` if the user is not an admin.
+    -   **Code:** `401 Unauthorized` if there is invalid token or the user is not an admin.
+    -   **Code:** `403 Forbidden` if the user ID format is invalid.
     -   **Code:** `404 Not Found` if a user with the specified ID does not exist.
     -   **Code:** `500 Internal Server Error` for unexpected errors.
 
@@ -139,9 +140,8 @@ This document provides details for the Task Management REST API.
     -   **Code:** `200 OK`
     -   **Content:** The fully updated task object.
 -   **Error Responses:**
-    -   **Code:** `400 Bad Request` if the payload is invalid.
+    -   **Code:** `400 Bad Request` if the payload is invalid or the task ID does not exist.
     -   **Code:** `401 Unauthorized` if the user is not an admin.
-    -   **Code:** `404 Not Found` if a task with the specified ID does not exist.
 
 ### 5. Delete a Task
 

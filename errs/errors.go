@@ -23,5 +23,11 @@ func New(code int, msg string, err error) *AppError {
 }
 
 var (
-	ErrUserNotFound = errors.New("user is not found")
+	ErrUserNotFound      = errors.New("user is not found")
+	ErrTaskNotFound      = errors.New("task in not found")
+	ErrUnexpected        = errors.New("unexpected error")
+	ErrInvalidUserId     = errors.New("invalid user id")
+	ErrInvalidTaskId     = errors.New("invalid task id")
+	ErrIncorrectPassword = errors.New("incorrect password")
+	ErrUsernameExists    = errors.New("username is already exists")
 )

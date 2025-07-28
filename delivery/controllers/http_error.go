@@ -10,7 +10,6 @@ import (
 )
 
 func handleError(c *gin.Context, err error) {
-	// We use errors.Is() to check for our specific sentinel errors.
 	switch {
 	case errors.Is(err, errs.ErrTaskNotFound):
 		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})

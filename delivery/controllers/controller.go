@@ -195,7 +195,7 @@ func (ac *AppController) Login(c *gin.Context) {
 // Promote handles POST /api/promote requests.
 func (ac *AppController) Promote(c *gin.Context) {
 	userID := c.Param("id")
-	log.Printf("Attempting to promote user", userID)
+	log.Println("Attempting to promote user", userID)
 	err := ac.userUsecase.Promote(userID)
 	if err != nil {
 		handleError(c, err)
